@@ -85,7 +85,9 @@ export default function ProductDetailsPage() {
             <ImageSlider images={data.images || []} />
             <div>
               <div className="flex items-start justify-between gap-3">
-                <h1 className="text-2xl font-semibold">{data.name}</h1>
+                <h1 className="text-xl md:text-2xl font-semibold">
+                  {data.name}
+                </h1>
                 <div className="flex gap-2">
                   <Link
                     href={`/products/${data.slug}/edit`}
@@ -134,7 +136,9 @@ export default function ProductDetailsPage() {
         filteredRelatedProducts &&
         filteredRelatedProducts.length > 0 && (
           <div className="mt-12">
-            <h2 className="text-xl font-semibold mb-6">Related Products</h2>
+            <h2 className="text-lg md:text-xl font-semibold mb-6">
+              Related Products
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {filteredRelatedProducts?.map((product) => (
                 <ProductCard
