@@ -11,7 +11,7 @@ export type ProductCardProps = {
     slug: string;
     category?: { name?: string } | null;
   };
-  onDelete: (id: string) => void;
+  onDelete?: (id: string) => void;
 };
 
 export default function ProductCard({ product, onDelete }: ProductCardProps) {
@@ -36,20 +36,24 @@ export default function ProductCard({ product, onDelete }: ProductCardProps) {
         <div className="text-sm font-medium">
           {formatCurrency(product.price)}
         </div>
-        <div className="flex gap-2 pt-2">
-          <Link
-            href={`/products/${product.slug}/edit`}
-            className="px-3 h-9 rounded bg-bx-muted/20 inline-flex items-center"
-          >
-            Edit
-          </Link>
-          <button
-            onClick={() => onDelete(product.id)}
-            className="px-3 h-9 rounded bg-bx-danger text-white"
-          >
-            Delete
-          </button>
-        </div>
+
+        {/* Delete and Edit Button */}
+        {onDelete && (
+          <div className="flex gap-2 pt-2">
+            <Link
+              href={`/products/${product.slug}/edit`}
+              className="px-3 h-9 rounded bg-bx-muted/20 inline-flex items-center"
+            >
+              Edit
+            </Link>
+            <button
+              onClick={() => onDelete(product.id)}
+              className="px-3 h-9 rounded bg-bx-danger text-white"
+            >
+              Delete
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

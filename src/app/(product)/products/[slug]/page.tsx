@@ -3,13 +3,18 @@ import { useState } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { formatCurrency, formatDate } from "@/utils/format";
-import { ProductDetailsSkeleton } from "@/components/Skeleton";
+import {
+  ProductCardSkeleton,
+  ProductDetailsSkeleton,
+} from "@/components/Skeleton";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
 import ImageSlider from "@/components/ImageSlider";
 import {
   useDeleteProductMutation,
   useGetProductBySlugQuery,
+  useGetProductsQuery,
 } from "@/services/productsApi";
+import ProductCard from "@/components/ProductCard";
 
 export default function ProductDetailsPage() {
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -24,6 +29,23 @@ export default function ProductDetailsPage() {
   });
   // Delete product mutation
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+
+  // Fetch related products
+  const { data: relatedProducts, isFetching: isProductFetching } =
+    useGetProductsQuery(
+      {
+        offset: 0,
+        limit: 4,
+        categoryId: data?.category?.id,
+      },
+      {
+        skip: !data?.category?.id,
+      }
+    );
+  // Filter out the current product from related products
+  const filteredRelatedProducts = relatedProducts
+    ?.filter((product) => product.id !== data?.id)
+    .slice(0, 3);
 
   // Handle delete action
   const handleDelete = async () => {
@@ -96,6 +118,34 @@ export default function ProductDetailsPage() {
           </div>
         </div>
       )}
+
+      {/* Products Loading Skleton  */}
+      {(isLoading || isProductFetching) && (
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <ProductCardSkeleton key={i} />
+          ))}
+        </div>
+      )}
+
+      {/* Related Products Section */}
+      {!isLoading &&
+        data &&
+        filteredRelatedProducts &&
+        filteredRelatedProducts.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-xl font-semibold mb-6">Related Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {filteredRelatedProducts?.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onDelete={undefined}
+                />
+              ))}
+            </div>
+          </div>
+        )}
 
       {confirmOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
